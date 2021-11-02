@@ -15,11 +15,21 @@ postRoute
       next(error);
     }
   })
-  .post(async (req, res, next) => {
+  .post(basicAuthorization, async (req, res, next) => {
     try {
-      const newPost = new PostSchema(req.body);
+      const checkId = req.body.author.findIndex(
+        (x) => x === req.user._id.toString()
+      );
+      const dataPost = {
+        ...req.body,
+        author:
+          checkId < 0
+            ? [...req.body.author, req.user._id.toString()]
+            : req.body.author,
+      };
+      const newPost = new PostSchema(dataPost);
       const { _id } = await newPost.save();
-      res.send({ _id });
+      res.send(dataPost);
     } catch (error) {
       next(error);
     }
