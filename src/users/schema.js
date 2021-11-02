@@ -7,14 +7,15 @@ const UserSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
+  role: { type: String, required: false, default: "User" },
 });
 
 UserSchema.pre("save", async function () {
-  const newUser = this;
+  const newUser = this
   const pass = newUser.password;
 
   if (newUser.isModified("password")) {
-    newUser.password = await bcrypt.hash(plainPW, 10);
+    newUser.password = await bcrypt.hash(pass, 10);
   }
 });
 

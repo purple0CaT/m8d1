@@ -1,5 +1,7 @@
 import express from "express";
 import createHttpError from "http-errors";
+import { basicAuthorization } from "../middlewares/authorization.js";
+import { checkPost } from "../middlewares/postAuth.js";
 import PostSchema from "./schema.js";
 
 const postRoute = express.Router();
@@ -18,6 +20,32 @@ postRoute
       const newPost = new PostSchema(req.body);
       const { _id } = await newPost.save();
       res.send({ _id });
+    } catch (error) {
+      next(error);
+    }
+  });
+postRoute
+  .route("/:id")
+  .put(basicAuthorization, checkPost, async (req, res, next) => {
+    try {
+      const modifPost = await PostSchema.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+          new: true,
+        }
+      );
+      console.log(req.body);
+      console.log(modifPost);
+      res.send(modifPost);
+    } catch (error) {
+      next(error);
+    }
+  })
+  .delete(basicAuthorization, checkPost, async (req, res, next) => {
+    try {
+      const deletePost = await PostSchema.findByIdAndDelete(req.params.id);
+      res.status(201).send("Deleted!");
     } catch (error) {
       next(error);
     }

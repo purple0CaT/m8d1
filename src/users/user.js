@@ -1,6 +1,8 @@
 import express from "express";
 import createHttpError from "http-errors";
+import { basicAuthorization } from "../middlewares/authorization.js";
 import UserSchema from "./schema.js";
+import PostSchema from "../post/schema.js";
 
 const userRoute = express.Router();
 
@@ -36,9 +38,16 @@ userRoute
     }
   });
 
-userRoute.get("/me/stories", async (req, res, next) => {
-  const users = await UserSchema.find();
-  res.send(users);
+userRoute.get("/me/stories", basicAuthorization, async (req, res, next) => {
+  try {
+    const users = await PostSchema.find(
+      { author: req.user._id },
+      { __v: 0 }
+    ).populate("author");
+    res.send(users);
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default userRoute;
