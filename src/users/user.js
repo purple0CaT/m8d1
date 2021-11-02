@@ -25,7 +25,7 @@ userRoute
       next(error);
     }
   })
-  .delete(async (req, res, next) => {
+  .delete(basicAuthorization, async (req, res, next) => {
     try {
       const userDel = await UserSchema.findByIdAndDelete(req.body.id);
       if (userDel) {
