@@ -35,8 +35,6 @@ postRoute
           new: true,
         }
       );
-      console.log(req.body);
-      console.log(modifPost);
       res.send(modifPost);
     } catch (error) {
       next(error);

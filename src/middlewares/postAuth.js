@@ -6,6 +6,6 @@ export const checkPost = async (req, res, next) => {
   if (post.author.toString() === req.user._id.toString()) {
     next();
   } else {
-    next(createHttpError(404, "You are not allowed!"));
+    next(createHttpError(403, "You are not allowed!"));
   }
 };
