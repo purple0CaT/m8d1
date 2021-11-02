@@ -9,4 +9,36 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
 });
 
-export default model("Users", UserSchema);
+UserSchema.pre("save", async function () {
+  const newUser = this;
+  const pass = newUser.password;
+
+  if (newUser.isModified("password")) {
+    newUser.password = await bcrypt.hash(plainPW, 10);
+  }
+});
+
+UserSchema.methods.toJSON = function () {
+  const user = this;
+  const userObj = user.toObject();
+
+  delete userObj.password;
+  delete userObj.__v;
+  return userObj;
+};
+
+UserSchema.statics.checkCred = async function (email, pass) {
+  const user = await this.findOne({ email });
+  if (user) {
+    const isMatch = await bcrypt.compare(pass, user.password);
+    if (isMatch) {
+      return user;
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+};
+
+export default model("User", UserSchema);

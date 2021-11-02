@@ -7,14 +7,17 @@ import {
   forbiddenHandler,
   catchAllHandler,
 } from "./errorHadlers.js";
-
+import userRoute from "./users/user.js";
+import postRoute from "./post/post.js";
+//
 const server = express();
 const port = process.env.PORT || 3003;
 server.use(cors());
 server.use(express.json());
 // === Midlewares
 // === Routes
-// server.use("/users");
+server.use("/user", userRoute);
+server.use("/post", postRoute);
 
 // ===
 
