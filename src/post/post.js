@@ -29,7 +29,7 @@ postRoute
       };
       const newPost = new PostSchema(dataPost);
       const { _id } = await newPost.save();
-      res.send(dataPost);
+      res.send(newPost);
     } catch (error) {
       next(error);
     }
@@ -44,7 +44,7 @@ postRoute
         {
           new: true,
         }
-      );
+      )
       res.send(modifPost);
     } catch (error) {
       next(error);
