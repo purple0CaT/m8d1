@@ -28,8 +28,8 @@ postRoute
             : req.body.author,
       };
       const newPost = new PostSchema(dataPost);
-      const { _id } = await newPost.save();
-      res.send(newPost);
+      const { _id } = await newPost.save()
+      res.send({_id});
     } catch (error) {
       next(error);
     }
