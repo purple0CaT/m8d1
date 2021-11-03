@@ -10,7 +10,7 @@ export const checkPost = async (req, res, next) => {
     ) {
       next();
     } else {
-      next(createHttpError(403, "You are not allowed!"));
+      next(createHttpError(403));
     }
   });
 };

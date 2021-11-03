@@ -8,10 +8,11 @@ const UserSchema = new Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   role: { type: String, required: false, default: "User" },
+  refreshToken: { type: String },
 });
 
 UserSchema.pre("save", async function () {
-  const newUser = this
+  const newUser = this;
   const pass = newUser.password;
 
   if (newUser.isModified("password")) {

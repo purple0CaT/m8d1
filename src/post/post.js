@@ -1,10 +1,11 @@
 import express from "express";
 import createHttpError from "http-errors";
-import { basicAuthorization } from "../middlewares/authorization.js";
 import { checkPost } from "../middlewares/postAuth.js";
+import { JWTAuthMiddle } from "../middlewares/token.js";
 import PostSchema from "./schema.js";
 
 const postRoute = express.Router();
+// ROUTE "/" GET POST
 postRoute
   .route("/")
   .get(async (req, res, next) => {
@@ -15,7 +16,7 @@ postRoute
       next(error);
     }
   })
-  .post(basicAuthorization, async (req, res, next) => {
+  .post(JWTAuthMiddle, async (req, res, next) => {
     try {
       const checkId = req.body.author.findIndex(
         (x) => x === req.user._id.toString()
@@ -28,15 +29,15 @@ postRoute
             : req.body.author,
       };
       const newPost = new PostSchema(dataPost);
-      const { _id } = await newPost.save()
-      res.send({_id});
+      const { _id } = await newPost.save();
+      res.send({ _id });
     } catch (error) {
       next(error);
     }
   });
 postRoute
   .route("/:id")
-  .put(basicAuthorization, checkPost, async (req, res, next) => {
+  .put(JWTAuthMiddle, checkPost, async (req, res, next) => {
     try {
       const modifPost = await PostSchema.findByIdAndUpdate(
         req.params.id,
@@ -44,13 +45,13 @@ postRoute
         {
           new: true,
         }
-      )
+      );
       res.send(modifPost);
     } catch (error) {
       next(error);
     }
   })
-  .delete(basicAuthorization, checkPost, async (req, res, next) => {
+  .delete(JWTAuthMiddle, checkPost, async (req, res, next) => {
     try {
       const deletePost = await PostSchema.findByIdAndDelete(req.params.id);
       res.status(201).send("Deleted!");
