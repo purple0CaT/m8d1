@@ -32,8 +32,7 @@ export const verifyJWT = (token) =>
     })
   );
 
-// REFRESH TOKEN
-// TOKEN CREATOR
+// CREATE REFRESH TOKEN
 export const generateRefrJWT = (payload) =>
   new Promise((res, rej) =>
     jwt.sign(
@@ -47,7 +46,7 @@ export const generateRefrJWT = (payload) =>
     )
   );
 
-// TOKEN VERIFICATION
+// TOKEN REFRESH VERIFICATION
 export const verifyRefrJWT = (token) =>
   new Promise((res, rej) =>
     jwt.verify(token, process.env.JWT_REFR_SECRET, (err, decodToken) => {

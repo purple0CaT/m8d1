@@ -8,9 +8,9 @@ const postRoute = express.Router();
 // ROUTE "/" GET POST
 postRoute
   .route("/")
-  .get(async (req, res, next) => {
+  .get(JWTAuthMiddle, async (req, res, next) => {
     try {
-      const posts = await PostSchema.find().populate("author");
+      const posts = await PostSchema.find({}, { __v: 0 }).populate("author");
       res.send(posts);
     } catch (error) {
       next(error);
