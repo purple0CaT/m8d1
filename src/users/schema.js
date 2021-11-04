@@ -6,9 +6,10 @@ const { Schema, model } = mongoose;
 const UserSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  password: { type: String, required: true },
+  password: { type: String },
   role: { type: String, required: false, default: "User" },
   refreshToken: { type: String },
+  googleId: { type: String },
 });
 
 UserSchema.pre("save", async function () {

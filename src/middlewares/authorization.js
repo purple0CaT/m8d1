@@ -4,10 +4,10 @@ import jwt from "jsonwebtoken";
 //
 export const JWTauthenticate = async (user) => {
   const accessToken = await generateJWT({ _id: user._id });
-  const accessRefreshToken = await generateRefrJWT({ _id: user._id });
-  user.refreshToken = accessRefreshToken;
+  const refreshToken = await generateRefrJWT({ _id: user._id });
+  user.refreshToken = refreshToken;
   await user.save();
-  return { accessToken, accessRefreshToken };
+  return { accessToken, refreshToken };
 };
 // TOKEN CREATOR
 export const generateJWT = (payload) =>
@@ -60,8 +60,8 @@ export const verifyRefreshToken = async (refToken) => {
   const user = await UserSchema.findById(decodeRefToken._id);
   if (!user) throw createHttpError(404, "No user founded!");
   if (user.refreshToken === refToken) {
-    const { accessToken, accessRefreshToken } = await JWTauthenticate(user);
-    return { accessToken, accessRefreshToken };
+    const { accessToken, refreshToken } = await JWTauthenticate(user);
+    return { accessToken, refreshToken };
   } else {
     throw createHttpError(401, "Token invalid");
   }

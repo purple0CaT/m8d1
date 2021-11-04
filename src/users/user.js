@@ -9,7 +9,7 @@ import {
   verifyRefreshToken,
   verifyRefrJWT,
 } from "../middlewares/authorization.js";
-
+import passport from "passport";
 const userRoute = express.Router();
 
 // userRoute
@@ -44,6 +44,40 @@ const userRoute = express.Router();
 //     }
 //   });
 
+userRoute.get(
+  "/googleLogin",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+userRoute.get(
+  "/googleRedirect",
+  passport.authenticate("google"),
+  async (req, res, next) => {
+    try {
+      res.cookie("accessToken", req.user.tokens.accessToken, {
+        httpOnly: true,
+        secure: (process.env.NODE_ENV = "production" ? true : false),
+        sameSite: "none",
+      });
+      res.cookie("refreshToken", req.user.tokens.refreshToken, {
+        httpOnly: true,
+        secure: (process.env.NODE_ENV = "production" ? true : false),
+        sameSite: "none",
+      });
+      res.redirect(
+        `http://localhost:3000?token=${req.user.tokens.accessToken}&refreshAccessToken=${req.user.tokens.refreshToken}`
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+userRoute.get("/me", JWTAuthMiddle, async (req, res, next) => {
+  try {
+    res.send(req.user);
+  } catch (error) {
+    next(error);
+  }
+});
 userRoute.get("/me/stories", JWTAuthMiddle, async (req, res, next) => {
   try {
     const users = await PostSchema.find(
@@ -55,13 +89,7 @@ userRoute.get("/me/stories", JWTAuthMiddle, async (req, res, next) => {
     next(error);
   }
 });
-userRoute.get("/me", JWTAuthMiddle, async (req, res, next) => {
-  try {
-    res.send(req.user);
-  } catch (error) {
-    next(error);
-  }
-});
+// ===
 userRoute.post("/register", async (req, res, next) => {
   try {
     const newUser = new UserSchema(req.body);
@@ -76,8 +104,8 @@ userRoute.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
     const user = await UserSchema.checkCred(email, password);
     if (user) {
-      const { accessToken, accessRefreshToken } = await JWTauthenticate(user);
-      res.send({ accessToken, accessRefreshToken });
+      const { accessToken, RefreshToken } = await JWTauthenticate(user);
+      res.send({ accessToken, RefreshToken });
     } else {
       next(createHttpError(401, "Something wrong with email or pass"));
     }
@@ -88,10 +116,10 @@ userRoute.post("/login", async (req, res, next) => {
 userRoute.post("/refreshToken", async (req, res, next) => {
   try {
     const { currentRefreshToken } = req.body;
-    const { accessToken, accessRefreshToken } = await verifyRefreshToken(
+    const { accessToken, RefreshToken } = await verifyRefreshToken(
       currentRefreshToken
     );
-    res.send({ accessToken, accessRefreshToken });
+    res.send({ accessToken, RefreshToken });
   } catch (error) {
     next(error);
   }
