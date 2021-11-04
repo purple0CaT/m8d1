@@ -3,7 +3,7 @@ import createHttpError from "http-errors";
 // import { basicAuthorization } from "../middlewares/authorization.js";
 import UserSchema from "./schema.js";
 import PostSchema from "../post/schema.js";
-import { JWTAuthMiddle } from "../middlewares/token.js";
+import { JWTAuthMiddle } from "../middlewares/authMiddleware.js";
 import {
   JWTauthenticate,
   verifyRefreshToken,
@@ -104,8 +104,8 @@ userRoute.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
     const user = await UserSchema.checkCred(email, password);
     if (user) {
-      const { accessToken, RefreshToken } = await JWTauthenticate(user);
-      res.send({ accessToken, RefreshToken });
+      const { accessToken, refreshToken } = await JWTauthenticate(user);
+      res.send({ accessToken, refreshToken });
     } else {
       next(createHttpError(401, "Something wrong with email or pass"));
     }
@@ -116,10 +116,10 @@ userRoute.post("/login", async (req, res, next) => {
 userRoute.post("/refreshToken", async (req, res, next) => {
   try {
     const { currentRefreshToken } = req.body;
-    const { accessToken, RefreshToken } = await verifyRefreshToken(
+    const { accessToken, refreshToken } = await verifyRefreshToken(
       currentRefreshToken
     );
-    res.send({ accessToken, RefreshToken });
+    res.send({ accessToken, refreshToken });
   } catch (error) {
     next(error);
   }

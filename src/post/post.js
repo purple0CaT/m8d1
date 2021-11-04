@@ -1,7 +1,7 @@
 import express from "express";
 import createHttpError from "http-errors";
 import { checkPost } from "../middlewares/postAuth.js";
-import { JWTAuthMiddle } from "../middlewares/token.js";
+import { JWTAuthMiddle } from "../middlewares/authMiddleware.js";
 import PostSchema from "./schema.js";
 
 const postRoute = express.Router();
