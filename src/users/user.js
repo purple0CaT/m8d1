@@ -64,7 +64,7 @@ userRoute.get(
         sameSite: "none",
       });
       res.redirect(
-        `http://localhost:3000?token=${req.user.tokens.accessToken}&refreshAccessToken=${req.user.tokens.refreshToken}`
+        `http://localhost:3000/`
       );
     } catch (error) {
       next(error);

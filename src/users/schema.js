@@ -6,10 +6,20 @@ const { Schema, model } = mongoose;
 const UserSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  password: { type: String },
+  password: {
+    type: String,
+    required: function () {
+      return !Boolean(this.gogleId);
+    },
+  },
   role: { type: String, required: false, default: "User" },
   refreshToken: { type: String },
-  googleId: { type: String },
+  googleId: {
+    type: String,
+    required: function () {
+      return !Boolean(this.password);
+    },
+  },
 });
 
 UserSchema.pre("save", async function () {

@@ -23,15 +23,6 @@ export const generateJWT = (payload) =>
     )
   );
 
-// TOKEN VERIFICATION
-export const verifyJWT = (token) =>
-  new Promise((res, rej) =>
-    jwt.verify(token, process.env.JWT_SECRET, (err, decodToken) => {
-      if (err) rej(err);
-      else res(decodToken);
-    })
-  );
-
 // CREATE REFRESH TOKEN
 export const generateRefrJWT = (payload) =>
   new Promise((res, rej) =>
@@ -44,6 +35,14 @@ export const generateRefrJWT = (payload) =>
         else res(token);
       }
     )
+  );
+// TOKEN VERIFICATION
+export const verifyJWT = (token) =>
+  new Promise((res, rej) =>
+    jwt.verify(token, process.env.JWT_SECRET, (err, decodToken) => {
+      if (err) rej(err);
+      else res(decodToken);
+    })
   );
 
 // TOKEN REFRESH VERIFICATION
